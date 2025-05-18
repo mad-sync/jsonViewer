@@ -106,6 +106,12 @@ function ClearIcon() {
   );
 }
 
+function DownloadIcon() {
+  return (
+    <svg width="18" height="18" fill="none" stroke="#2d7a46" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M12 5v12M6 13l6 6 6-6"/><rect x="4" y="19" width="16" height="2" rx="1"/></svg>
+  );
+}
+
 function App() {
   const [jsonError, setJsonError] = useState<string | null>(null)
   const [jsonValue, setJsonValue] = useState<string>(`{
@@ -175,6 +181,18 @@ function App() {
     setJsonError(null)
   }
 
+  const handleViewerDownload = () => {
+    if (!jsonError && parsedJson) {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(parsedJson, null, 2));
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", "formatted.json");
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+    }
+  }
+
   return (
     <PageContainer>
       <Title>JSON Viewer / Editor</Title>
@@ -213,6 +231,7 @@ function App() {
             <HeaderActions>
               <IconButton title="Copy" onClick={handleViewerCopy} disabled={!!jsonError}><CopyIcon /></IconButton>
               <IconButton title="Clear" onClick={handleViewerClear}><ClearIcon /></IconButton>
+              <IconButton title="Download" onClick={handleViewerDownload} disabled={!!jsonError}><DownloadIcon /></IconButton>
             </HeaderActions>
           </Header>
           <ViewerWrapper>
