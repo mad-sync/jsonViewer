@@ -5,8 +5,11 @@ import ReactJson from 'react-json-view'
 
 const PageContainer = styled.div`
   min-height: 100vh;
+  height: 100vh;
   background: #f7f8fa;
   padding: 40px 0;
+  display: flex;
+  flex-direction: column;
 `;
 
 const Title = styled.h1`
@@ -24,17 +27,20 @@ const AppContainer = styled.div`
   padding: 0 32px;
   gap: 32px;
   box-sizing: border-box;
+  flex: 1 1 0;
+  min-height: 0;
 `;
 
 const Card = styled.div`
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.06);
-  flex: 1;
+  flex: 1 1 0;
   padding: 0 0 24px 0;
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
 `;
 
 const Header = styled.div`
@@ -71,10 +77,12 @@ const IconButton = styled.button`
 `;
 
 const EditorWrapper = styled.div`
-  flex: 1;
-  min-height: 400px;
+  flex: 1 1 0;
+  min-height: 0;
   border-radius: 12px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 `;
 
 const ViewerWrapper = styled.div`
@@ -208,6 +216,7 @@ function App() {
           <EditorWrapper>
             <Editor
               height="100%"
+              width="100%"
               defaultLanguage="json"
               theme="light"
               value={jsonValue}
