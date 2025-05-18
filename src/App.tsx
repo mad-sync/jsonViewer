@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import styled from 'styled-components'
 import Editor from '@monaco-editor/react'
 import ReactJson from 'react-json-view'
@@ -30,10 +30,43 @@ const Card = styled.div`
   border-radius: 12px;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.06);
   flex: 1;
-  padding: 24px 0 24px 0;
+  padding: 0 0 24px 0;
   display: flex;
   flex-direction: column;
   min-width: 0;
+`;
+
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px 10px 24px;
+  border-bottom: 1px solid #f0f0f0;
+`;
+
+const HeaderTitle = styled.span`
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #23272f;
+`;
+
+const HeaderActions = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+const IconButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  &:hover {
+    background: #f0f0f0;
+  }
 `;
 
 const EditorWrapper = styled.div`
@@ -60,6 +93,18 @@ const ErrorMessage = styled.div`
   font-family: monospace;
   margin-top: 24px;
 `;
+
+function CopyIcon() {
+  return (
+    <svg width="18" height="18" fill="none" stroke="#23272f" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+  );
+}
+
+function ClearIcon() {
+  return (
+    <svg width="18" height="18" fill="none" stroke="#ff4d4f" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M9 10v6M15 10v6M10 4h4"/></svg>
+  );
+}
 
 function App() {
   const [jsonError, setJsonError] = useState<string | null>(null)
@@ -91,6 +136,7 @@ function App() {
       return null
     }
   })
+  const editorRef = useRef<any>(null)
 
   const handleEditorChange = (value: string | undefined) => {
     if (!value) return
@@ -107,11 +153,40 @@ function App() {
     }
   }
 
+  const handleEditorCopy = () => {
+    navigator.clipboard.writeText(jsonValue)
+  }
+
+  const handleEditorClear = () => {
+    setJsonValue('')
+    setParsedJson(null)
+    setJsonError(null)
+  }
+
+  const handleViewerCopy = () => {
+    if (!jsonError && parsedJson) {
+      navigator.clipboard.writeText(JSON.stringify(parsedJson, null, 2))
+    }
+  }
+
+  const handleViewerClear = () => {
+    setJsonValue('')
+    setParsedJson(null)
+    setJsonError(null)
+  }
+
   return (
     <PageContainer>
       <Title>JSON Viewer / Editor</Title>
       <AppContainer>
         <Card>
+          <Header>
+            <HeaderTitle>Editor</HeaderTitle>
+            <HeaderActions>
+              <IconButton title="Copy" onClick={handleEditorCopy}><CopyIcon /></IconButton>
+              <IconButton title="Clear" onClick={handleEditorClear}><ClearIcon /></IconButton>
+            </HeaderActions>
+          </Header>
           <EditorWrapper>
             <Editor
               height="100%"
@@ -133,22 +208,33 @@ function App() {
           </EditorWrapper>
         </Card>
         <Card>
+          <Header>
+            <HeaderTitle>Viewer</HeaderTitle>
+            <HeaderActions>
+              <IconButton title="Copy" onClick={handleViewerCopy} disabled={!!jsonError}><CopyIcon /></IconButton>
+              <IconButton title="Clear" onClick={handleViewerClear}><ClearIcon /></IconButton>
+            </HeaderActions>
+          </Header>
           <ViewerWrapper>
             {jsonError ? (
               <ErrorMessage>
                 <strong>JSON Error:</strong> {jsonError}
               </ErrorMessage>
             ) : (
-              <ReactJson
-                src={parsedJson}
-                name={false}
-                theme="rjv-default"
-                iconStyle="triangle"
-                displayDataTypes={false}
-                enableClipboard={false}
-                collapsed={false}
-                style={{ background: 'transparent', fontSize: 16 }}
-              />
+              jsonValue.trim() && parsedJson ? (
+                <ReactJson
+                  src={parsedJson}
+                  name={false}
+                  theme="rjv-default"
+                  iconStyle="triangle"
+                  displayDataTypes={false}
+                  enableClipboard={false}
+                  collapsed={false}
+                  style={{ background: 'transparent', fontSize: 16 }}
+                />
+              ) : (
+                <div style={{ color: '#bbb', fontStyle: 'italic', marginTop: 24 }}>No JSON to display</div>
+              )
             )}
           </ViewerWrapper>
         </Card>
