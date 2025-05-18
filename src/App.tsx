@@ -20,9 +20,10 @@ const Title = styled.h1`
 
 const AppContainer = styled.div`
   display: flex;
-  max-width: 1100px;
-  margin: 0 auto;
+  width: 100%;
+  padding: 0 32px;
   gap: 32px;
+  box-sizing: border-box;
 `;
 
 const Card = styled.div`
