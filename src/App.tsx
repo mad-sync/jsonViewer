@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 import Editor from '@monaco-editor/react'
 import ReactJson from 'react-json-view'
@@ -143,7 +143,6 @@ function App() {
       return null
     }
   })
-  const editorRef = useRef<any>(null)
 
   const handleEditorChange = (value: string | undefined) => {
     if (!value) return
